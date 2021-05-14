@@ -5,15 +5,26 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TableHockey</title>
+    <style>
+            body{
+                margin:0;
+            }
+            canvas{
+                display:black;
+            }
+
+    </style>
 </head>
 <body>
-    
+
     <script src="three.js"></script>
     <script type="module" src="GLTFLoader.js"></script>
+    <script src="DragControls.js"></script>
     <script type="module">
         import {GLTFLoader} from "./GLTFLoader.js"
 
-        var scene = THREE.Scene();
+        var scene = new THREE.Scene();
+
         var camera = new THREE.PerspectiveCamera(
             75,
             window.innerWidth / window.innerHeight,
@@ -26,8 +37,31 @@
 
         var loader = new GLTFLoader();
 
-        loader.load("untitled.gltf")
-        https://youtu.be/F4q2cqj_Tdc?t=513
+        var obj;
+        loader.load("untitled.gltf",function(gltf){
+            obj = gltf.scene;
+            scene.add(gltf.scene);
+
+        })
+       // controls = new THREE.DragControls(camera, renerer.domElement);
+        scene.background = new THREE.Color(0xFFFFFF);
+        var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
+        scene.add(light);
+        camera.position.set(0,0,10);
+        function animate() {
+            requestAnimationFrame(animate);
+            obj.rotation.x = 1.5;
+            obj.rotation.y = -1.5;
+            obj.rotation.z = 0.8;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        
+
+        //https://youtu.be/F4q2cqj_Tdc?t=513
+
     </script>
 </body>
 </html>
