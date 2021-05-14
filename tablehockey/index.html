@@ -35,7 +35,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        controls = new THREE.DragControls(camera, renerer.domElement);
+        
 
         var loader = new GLTFLoader();
 
@@ -50,15 +50,18 @@
         var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
         scene.add(light);
         camera.position.set(0,0,10);
+        //controls = new THREE.DragControls(camera, renderer.domElement);
+        
         function animate() {
             requestAnimationFrame(animate);
             obj.rotation.x = 1.5;
             obj.rotation.y = -1.5;
-            obj.rotation.z = 0.8;
+            obj.rotation.z += 0.01;
 
             renderer.render(scene, camera);
         }
         animate();
+        //controls.update()
         
         
 
