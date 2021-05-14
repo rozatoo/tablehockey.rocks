@@ -35,6 +35,8 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
+        controls = new THREE.DragControls(camera, renerer.domElement);
+
         var loader = new GLTFLoader();
 
         var obj;
