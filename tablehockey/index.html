@@ -26,8 +26,10 @@
 
         var scene = new THREE.Scene();
 
+
+        
         var camera = new THREE.PerspectiveCamera(
-            75,
+            45,
             window.innerWidth / window.innerHeight,
             0.01,
             1000
@@ -41,28 +43,15 @@
         var loader = new GLTFLoader();
 
         var obj;
-        loader.load("untitled.gltf",function(gltf){
+        loader.load("./3D-Models/Field.gltf",function(gltf){
             obj = gltf.scene;
             scene.add(gltf.scene);
 
         })
         
-        const controls = new THREE.OrbitControls( camera, renderer.domElement);
-        controls.update();
-/*
-        controls.addEventListener( 'dragstart', function ( event ) {
+        const controls = new THREE.MapControls( camera, renderer.domElement);
 
-        event.object.material.emissive.set( 0xaaaaaa );
 
-        } );
-
-        controls.addEventListener( 'dragend', function ( event ) {
-
-        event.object.material.emissive.set( 0x000000 );
-
-        } );
-
-*/
         scene.background = new THREE.Color(0xFFFFFF);
         var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
         scene.add(light);
@@ -71,14 +60,15 @@
         
         function animate() {
             requestAnimationFrame(animate);
-            obj.rotation.x = 1.5;
-            obj.rotation.y = 1.5;
-            obj.rotation.z = 0.01;
+           /* obj.rotation.x = 1;
+            obj.rotation.y = 4.7;
+            obj.rotation.z = 0;*/
 
             renderer.render(scene, camera);
         }
         animate();
-        controls = new THREE.DragControls(camera, renderer.domElement);
+
+
         controls.update()
         
         
