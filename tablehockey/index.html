@@ -22,62 +22,80 @@
     <script src="DragControls.js"></script>
     <script src="OrbitControls.js"></script>
     <script type="module">
-        import {GLTFLoader} from "./GLTFLoader.js"
+    
+    import {GLTFLoader} from "./GLTFLoader.js"
 
-        var scene = new THREE.Scene();
-
-
-        
-        var camera = new THREE.PerspectiveCamera(
-            75,
-            window.innerWidth / window.innerHeight,
-            0.01,
-            1000
-        );
-        var renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        
-
-        var loader = new GLTFLoader();
-
-        var obj;
-        loader.load("./3D-Models/Field.gltf",function(gltf){
-            obj = gltf.scene;
-            scene.add(gltf.scene);
-
-        })
-        
-        const controls = new THREE.MapControls( camera, renderer.domElement);
+     var scene = new THREE.Scene();
 
 
-        scene.background = new THREE.Color(0xFFFFFF);
-        //var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
-        var light = new THREE.PointLight(0xfffff, 2, 200);
-        light.position.set(14.5, 10, -24.5)
-        scene.add(light);
-        camera.position.set(14.5,10,-24.5);
-        
-        
-        function animate() {
-            requestAnimationFrame(animate);
-            /*obj.rotation.x = 1;
-            obj.rotation.y = 4.7;
-            obj.rotation.z = 3;*/
-            //light.position.x =+ 0.001;
+     
+     var camera = new THREE.PerspectiveCamera(
+         75,
+         window.innerWidth / window.innerHeight,
+         0.01,
+         1000
+     );
+     var renderer = new THREE.WebGLRenderer();
+     renderer.setSize(window.innerWidth, window.innerHeight);
+     document.body.appendChild(renderer.domElement);
 
-            renderer.render(scene, camera);
-        }
-        animate();
+     
 
+     var loader = new GLTFLoader();
 
-        controls.update()
-        
-        
+     var field;
+     var player_1;
+     var player_2;
+     var puck;
 
-        
+     function loadPlayer(playerObj, directory){
+         loader.load("."+directory, function(gltf){
+         playerObj = gltf.scene;
+         scene.add(gltf.scene);
+         })
+     }
 
-    </script>
+     loadPlayer(field, "/3D-Models/Field.gltf")
+     loadPlayer(player_1, "/3D-Models/Player_1.gltf")
+     loadPlayer(player_2, "/3D-Models/Player_2.gltf")
+     loadPlayer(puck, "/3D-Models/Puck.gltf")
+     
+     const controls = new THREE.MapControls( camera, renderer.domElement);
+
+     scene.background = new THREE.Color(0xFFFFFF);
+     //var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
+     var light = new THREE.PointLight(0xfffff, 2, 200);
+     light.position.set(14.5, 10, -24.5)
+     scene.add(light);
+     camera.position.set(14.5,10,-24.5);
+     
+     function animate() {
+         requestAnimationFrame(animate);
+         /*obj.rotation.x = 1;
+         obj.rotation.y = 4.7;
+         obj.rotation.z = 3;
+         //light.position.x =+ 0.001;
+         
+         player_1.position.x += 0.01;
+         player_2.position.y += 0.005;
+         */
+         renderer.render(scene, camera);
+     }
+
+     window.addEventListener('mousemove', function (event) {
+         document.getElementById('mouse_x').textContent = event.x
+         document.getElementById('mouse_y').textContent = event.y
+     });
+
+     animate();
+     controls.update();
+     
+     </script>
+     <p>
+        X : <span id="mouse_x"></span>
+     </p>
+     <p>
+        Y : <span id="mous_y"></span>
+     </p>
 </body>
 </html>
