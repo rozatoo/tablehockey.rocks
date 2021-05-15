@@ -20,6 +20,7 @@
     <script src="three.js"></script>
     <script type="module" src="GLTFLoader.js"></script>
     <script src="DragControls.js"></script>
+    <script src="OrbitControls.js"></script>
     <script type="module">
         import {GLTFLoader} from "./GLTFLoader.js"
 
@@ -45,27 +46,44 @@
             scene.add(gltf.scene);
 
         })
-       // controls = new THREE.DragControls(camera, renerer.domElement);
+        
+        const controls = new THREE.OrbitControls( camera, renderer.domElement);
+        controls.update();
+/*
+        controls.addEventListener( 'dragstart', function ( event ) {
+
+        event.object.material.emissive.set( 0xaaaaaa );
+
+        } );
+
+        controls.addEventListener( 'dragend', function ( event ) {
+
+        event.object.material.emissive.set( 0x000000 );
+
+        } );
+
+*/
         scene.background = new THREE.Color(0xFFFFFF);
         var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
         scene.add(light);
         camera.position.set(0,0,10);
-        //controls = new THREE.DragControls(camera, renderer.domElement);
+        
         
         function animate() {
             requestAnimationFrame(animate);
             obj.rotation.x = 1.5;
-            obj.rotation.y = -1.5;
-            obj.rotation.z += 0.01;
+            obj.rotation.y = 1.5;
+            obj.rotation.z = 0.01;
 
             renderer.render(scene, camera);
         }
         animate();
-        //controls.update()
+        controls = new THREE.DragControls(camera, renderer.domElement);
+        controls.update()
         
         
 
-        //https://youtu.be/F4q2cqj_Tdc?t=513
+        
 
     </script>
 </body>
