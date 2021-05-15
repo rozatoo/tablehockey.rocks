@@ -29,7 +29,7 @@
 
         
         var camera = new THREE.PerspectiveCamera(
-            45,
+            75,
             window.innerWidth / window.innerHeight,
             0.01,
             1000
@@ -53,16 +53,19 @@
 
 
         scene.background = new THREE.Color(0xFFFFFF);
-        var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
+        //var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
+        var light = new THREE.PointLight(0xfffff, 2, 200);
+        light.position.set(14.5, 10, -24.5)
         scene.add(light);
-        camera.position.set(0,0,10);
+        camera.position.set(14.5,10,-24.5);
         
         
         function animate() {
             requestAnimationFrame(animate);
-           /* obj.rotation.x = 1;
+            /*obj.rotation.x = 1;
             obj.rotation.y = 4.7;
-            obj.rotation.z = 0;*/
+            obj.rotation.z = 3;*/
+            //light.position.x =+ 0.001;
 
             renderer.render(scene, camera);
         }
