@@ -22,60 +22,174 @@
     <script src="DragControls.js"></script>
     <script src="OrbitControls.js"></script>
     <script type="module">
-        import {GLTFLoader} from "./GLTFLoader.js"
+    
+    import {GLTFLoader} from "./GLTFLoader.js"
 
-        var scene = new THREE.Scene();
+    var scene = new THREE.Scene();
+    var mouse = new THREE.Vector2();
+    var raycaster = new THREE.Raycaster();
+	let INTERSECTED;
+     
+    var camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.01,
+        1000
+    );
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-        var camera = new THREE.PerspectiveCamera(
-            75,
-            window.innerWidth / window.innerHeight,
-            0.01,
-            1000
-        );
-        var renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+     
 
+    var loader = new GLTFLoader();
+
+    var field;
+    var player_1;
+    var player_2;
+    var puck;
+    
+   // var material = new MeshBasicMaterial({ color:0x0000 });
+   // var player_2 = new THREE.Mesh(material);
+    loader.load("./3D-Models/Field.gltf", function(gltf){
+        field = gltf.scene;
+        scene.add(gltf.scene);
+    })
+    /*
+    loader.load("./3D-Models/Player_1.gltf", function(gltf){
+        player_1 = gltf.scene;
+        scene.add(gltf.scene);
+    })
+    loader.load("./3D-Models/Player_2.gltf", function(gltf){
+        player_2 = gltf.scene;
+        scene.add(gltf.scene);
+    })
+    loader.load("./3D-Models/Puck.gltf", function(gltf){
+        puck = gltf.scene;
+        scene.add(gltf.scene);
+    })
+    console.log("scene.chlidren after gltf loaded: " + scene.children)
+    */
+
+  //Example of how to make a Mesg Cylinder
+    var geometry = new THREE.CylinderGeometry( 2.1, 2.1, 3, 20);
+
+    var material = new THREE.MeshLambertMaterial({
+        color:0xF0032222
+
+    });
+    var mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+
+    const controls = new THREE.MapControls( camera, renderer.domElement);
+
+    scene.background = new THREE.Color(0xFFFFFF);
+    //var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
+    var light = new THREE.PointLight(0xfffff, 2, 200);
+    light.position.set(14.5, 10, -24.5)
+    scene.add(light);
+
+    camera.position.set(14.5,10,-24.5);
+    camera.lookAt(0, 0, 0);
+    
+    function animate() {
+        requestAnimationFrame(animate);
+
+        /*obj.rotation.x = 1;
+        obj.rotation.y = 4.7;
+        obj.rotation.z = 3;
+        //light.position.x =+ 0.001;
         
-
-        var loader = new GLTFLoader();
-
-        var obj;
-        loader.load("./3D-Models/Field.gltf",function(gltf){
-            obj = gltf.scene;
-            scene.add(gltf.scene);
-
-        })
-        
-        const controls = new THREE.MapControls( camera, renderer.domElement);
-
-
-        scene.background = new THREE.Color(0xFFFFFF);
-        //var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
-        var light = new THREE.PointLight(0xfffff, 2, 200);
-        light.position.set(14.5, 10, -24.5)
-        scene.add(light);
-        camera.position.set(14.5,10,-24.5);
-        
-        
-        function animate() {
-            requestAnimationFrame(animate);
-            /*obj.rotation.x = 1;
-            obj.rotation.y = 4.7;
-            obj.rotation.z = 3;*/
-            //light.position.x =+ 0.001;
-
-            renderer.render(scene, camera);
+        player_1.position.x = 0.01;
+        player_2.position.y = 0.005;
+        */ 
+        var controls;
+        if (mesh && player_1 && player_2 && field) {
+            mesh.rotation.x = 0.00001;
+            console.log("rotating");
         }
-        animate();
+        highlight();
+        renderer.render(scene, camera);
+    }
 
+    function highlight() {
 
-        controls.update()
-        
-        
+        const intersects = raycaster.intersectObjects( scene.children );
 
-        
+				if ( intersects.length > 0 ) {
 
+					const targetDistance = intersects[ 0 ].distance;
+
+					if ( INTERSECTED != intersects[ 0 ].object ) {
+
+						if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+						INTERSECTED = intersects[ 0 ].object;
+						INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+						INTERSECTED.material.emissive.setHex( 0xff0000 );
+                        console.log("a");
+					}
+
+				} else {
+
+					if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+					INTERSECTED = null;
+				}
+					scene.overrideMaterial = null;
+
+					renderer.clear();
+					renderer.render( scene, camera );
+    }
+
+    window.addEventListener('mousemove', function (event) {
+        document.getElementById('mouse_x').textContent = event.x
+        document.getElementById('mouse_y').textContent = event.y
+    });
+
+   /* function hoverPieces() {  
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children);
+        console.log("scene.children.size = " + scene.children.length);
+        console.log("scene.children.<something> : " + scene.children);
+            for (let i = 0; i < intersects.length; i++) {
+                console.log("a");
+                intersects[i].object.material.transparent = true;
+                intersects[i].object.material.opacity = 0.5;
+                document.getElementById('no').textContent = event.x
+            }
+    }*/
+
+    function onWindowResize() {
+        camera.aspect = window.innerwidth / window.innerhight;
+        renderer.setSize(window.innerWidth, window.innerHight);
+    }
+
+    function onMouseMove( event ) {
+	// calculate mouse position in normalized device coordinates
+	// (-1 to +1) for both components
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    }
+
+    window.addEventListener('resize', onWindowResize);
+    window.addEventListener('mousemove', onMouseMove, false);
+
+    
+    animate();
+    controls.update();
+    //hoverPieces();
+     
     </script>
+
+    <p>
+        X : <span id="mouse_x"></span>
+        Mouse is over object: <span id="no"></span> 
+    </p>
+    <p>
+        Y : <span id="mouse_y"></span>
+    </p>
+    
 </body>
 </html>
