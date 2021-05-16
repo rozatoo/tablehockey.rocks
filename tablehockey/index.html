@@ -22,12 +22,9 @@
 
 		<script type="module">
 
-
-
 			import * as THREE from './three.module.js';
-            import { GLTFLoader } from './GLTFLoader.js';
+			import { GLTFLoader } from './GLTFLoader.js';
 			import Stats from './stats.module.js';
-            import { OrbitControls } from './OrbitControls.js';
 
 			let container, stats;
 			let camera, scene, raycaster, renderer;
@@ -56,8 +53,42 @@
 				scene.add( light );
 
 				const geometry = new THREE.BoxGeometry( 20, 20, 20 );
-                const controls = new THREE.MapControls( camera, renderer.domElement);
 
+                
+                var loader = new GLTFLoader();
+
+                var field;
+                var player_1;
+                var player_2;
+                var puck;
+                
+            // var material = new MeshBasicMaterial({ color:0x0000 });
+            // var player_2 = new THREE.Mesh(material);
+
+                loader.load("./3D-Models/Field.gltf", function(gltf){
+                    field = gltf.scene;
+                    scene.add(gltf.scene);
+                })
+
+				for ( let i = 0; i < 10; i ++ ) {
+
+					const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+
+					object.position.x = Math.random() * 50 - 10;
+					object.position.y = Math.random() * 50 - 10;
+					object.position.z = Math.random() * 50 - 10;
+
+					object.rotation.x = Math.random() * 2 * Math.PI;
+					object.rotation.y = Math.random() * 2 * Math.PI;
+					object.rotation.z = Math.random() * 2 * Math.PI;
+
+					object.scale.x = Math.random() + 0.00001;
+					object.scale.y = Math.random() + 0.00001;
+					object.scale.z = Math.random() + 0.00001;
+
+					scene.add( object );
+
+				}
 
 				raycaster = new THREE.Raycaster();
 
@@ -106,6 +137,11 @@
 
 			function render() {
 
+				theta += 0.1;
+
+				camera.position.x = radius * Math.sin( THREE.MathUtils.degToRad( theta ) );
+				camera.position.y = radius * Math.sin( THREE.MathUtils.degToRad( theta ) );
+				camera.position.z = radius * Math.cos( THREE.MathUtils.degToRad( theta ) );
 				camera.lookAt( scene.position );
 
 				camera.updateMatrixWorld();
@@ -114,7 +150,8 @@
 
 				raycaster.setFromCamera( pointer, camera );
 
-				const intersects = raycaster.intersectObjects( scene.children );
+				const intersects = raycaster.intersectObjects( scene.children, true );
+                console.log(scene.children);
 
 				if ( intersects.length > 0 ) {
 
