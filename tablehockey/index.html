@@ -30,249 +30,134 @@
     var raycaster = new THREE.Raycaster();
 	let INTERSECTED;
      
+    /*
+    
+    */
     var camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
         0.01,
-        1000
-    );
-    var renderer = new THREE.WebGLRenderer();
+        1000);
+
+    // const camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
+    
+    camera.position.set( 20, 35, 0 );
+    // camera.lookAt( 300, 0, -20 );
+
+    var renderer = new THREE.WebGLRenderer(); 
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.body.appendChild(renderer.domElement);
 
-     
-
     var loader = new GLTFLoader();
+    const controls = new THREE.MapControls( camera, renderer.domElement);
 
-    var field;
-    var player_1;
-    var player_2;
-    var puck;
+    scene.background = new THREE.Color('#EDFFC9');
+    var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.);
+    light.position.set(0,10,0)
+    const rectLight = new THREE.RectAreaLight( 0xffffff, 3,  80, 80 );
+    rectLight.position.set( -30, 100, -20 );
+    rectLight.lookAt( 0, 0, 0 );
+    rectLight.castShadow = true;
+    scene.add( rectLight )
+    scene.add(light);
+
+    var field, player_1, player_2, puck, color_1, color_2;
     
+    color_1 = new THREE.Color('#FFCD82');
+    color_2 = new THREE.Color('#82E4FF');
    // var material = new MeshBasicMaterial({ color:0x0000 });
    // var player_2 = new THREE.Mesh(material);
-    loader.load("./3D-Models/Field.gltf", function(gltf){
+    loader.load("./3D-Models/Field.glb", function(gltf){
         field = gltf.scene;
         scene.add(gltf.scene);
+        field.castShadow = true;
     })
     loader.load("./3D-Models/Player_1.gltf", function(gltf){
         player_1 = gltf.scene;
         scene.add(gltf.scene);
+        player_1.castShadow = true;
     })
     loader.load("./3D-Models/Player_2.gltf", function(gltf){
         player_2 = gltf.scene;
         scene.add(gltf.scene);
+        player_2.castShadow = true;
     })
     loader.load("./3D-Models/Puck.gltf", function(gltf){
         puck = gltf.scene;
         scene.add(gltf.scene);
+        puck.castShadow = ture;
     })
+    
     console.log("scene.chlidren after gltf loaded: " + scene.children)
 
-  //Example of how to make a Mesg Cylinder
-    var geometry = new THREE.CylinderGeometry( 2.1, 2.1, 3, 20);
+  //Example of how to make a Mesh Cylinder
+  /*  var geometry = new THREE.CylinderGeometry( 2.1, 2.1, 3, 20);
 
     var material = new THREE.MeshLambertMaterial({
         color:0xF0032222
 
     });
     var mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-
-    const controls = new THREE.MapControls( camera, renderer.domElement);
-
-    scene.background = new THREE.Color(0xFFFFFF);
-    //var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
-    var light = new THREE.PointLight(0xfffff, 2, 200);
-    light.position.set(14.5, 10, -24.5)
-    scene.add(light);
-
-    camera.position.set(14.5,10,-24.5);
-    camera.lookAt(0, 0, 0);
-    
-    
+    scene.add(mesh);*/
 
     function animate() {
         requestAnimationFrame(animate);
 
-        /*obj.rotation.x = 1;
-        obj.rotation.y = 4.7;
-        obj.rotation.z = 3;
-        //light.position.x =+ 0.001;
-        
-        player_1.position.x = 0.01;
-        player_2.position.y = 0.005;
-        */ 
-        var controls;
-        if (mesh && player_1 && player_2 && field) {
-            mesh.rotation.x = 0.00001;
-            console.log("rotating");
+        if (player_1 && player_2 && field) {
+            //player_1.material.emissive.setHex( 0xff0000 );
+
         }
         highlight();
+        window.addEventListener( 'resize', onWindowResize );
         renderer.render(scene, camera);
     }
 
+
+    function onWindowResize() {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+}
+
     function highlight() {
+        raycaster.setFromCamera( mouse, camera );
 
-        const intersects = raycaster.intersectObjects( scene.children );
+            const intersects = raycaster.intersectObjects( scene.children, true );
+            console.log(scene.children, true);
 
-<<<<<<< Updated upstream
-				if ( intersects.length > 0 ) {
-=======
-		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - interactive cubes
-		</div>
+            if ( intersects.length > 0 ) {
 
-		<script type="module">
+                if ( INTERSECTED != intersects[ 0 ].object ) {
 
+                    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
+                    INTERSECTED = intersects[ 0 ].object;
+                    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                    INTERSECTED.material.emissive.setHex( 0xff0000 );
+                    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 
-			import * as THREE from './three.module.js';
-            import { GLTFLoader } from './GLTFLoader.js';
-			import Stats from './stats.module.js';
+                }
 
-			let container, stats;
-			let camera, scene, raycaster, renderer;
+            } else {
 
-			let INTERSECTED;
-			let theta = 0;
+                if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
-			const pointer = new THREE.Vector2();
-			const radius = 100;
+                INTERSECTED = null;
 
-			init();
-			animate();
+            }
 
-			function init() {
-
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
-
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-
-				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0xf0f0f0 );
-
-				const light = new THREE.DirectionalLight( 0xffffff, 1 );
-				light.position.set( 1, 1, 1 ).normalize();
-				scene.add( light );
-
-                var geometry = new THREE.CylinderGeometry( 2.1, 2.1, 3, 20);
-
-                var material = new THREE.MeshLambertMaterial({
-                    color:0xF0032222
-
-                });
-                var mesh = new THREE.Mesh(geometry, material);
-                scene.add(mesh);
-
-				raycaster = new THREE.Raycaster();
-
-				renderer = new THREE.WebGLRenderer();
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				container.appendChild( renderer.domElement );
-
-				stats = new Stats();
-				container.appendChild( stats.dom );
-
-				document.addEventListener( 'mousemove', onPointerMove );
-
-				//
-
-				window.addEventListener( 'resize', onWindowResize );
-
-			}
-
-			function onWindowResize() {
-
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-			}
-
-			function onPointerMove( event ) {
-
-				pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
-			}
-
-			//
-
-			function animate() {
-
-				requestAnimationFrame( animate );
-
-				render();
-				stats.update();
-
-			}
-
-			function render() {
-
-				camera.lookAt( scene.position );
-
-				camera.updateMatrixWorld();
->>>>>>> Stashed changes
-
-					const targetDistance = intersects[ 0 ].distance;
-
-
-
-					if ( INTERSECTED != intersects[ 0 ].object ) {
-
-						if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-						INTERSECTED = intersects[ 0 ].object;
-						INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-						INTERSECTED.material.emissive.setHex( 0xff0000 );
-                        console.log("a");
-					}
-
-				} else {
-
-					if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-					INTERSECTED = null;
-
-				}
-
-
-					scene.overrideMaterial = null;
-
-					renderer.clear();
-					renderer.render( scene, camera );
-
-				
+            renderer.render( scene, camera );
     }
 
     window.addEventListener('mousemove', function (event) {
         document.getElementById('mouse_x').textContent = event.x
         document.getElementById('mouse_y').textContent = event.y
     });
-
-   /* function hoverPieces() {
-        
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(scene.children);
-        console.log("scene.children.size = " + scene.children.length);
-        console.log("scene.children.<something> : " + scene.children);
-            for (let i = 0; i < intersects.length; i++) {
-                console.log("a");
-                intersects[i].object.material.transparent = true;
-                intersects[i].object.material.opacity = 0.5;
-                document.getElementById('no').textContent = event.x
-            }
-    }*/
-
-    function onWindowResize() {
-        camera.aspect = window.innerwidth / window.innerhight;
-        renderer.setSize(window.innerWidth, window.innerHight);
-    }
 
     function onMouseMove( event ) {
 	// calculate mouse position in normalized device coordinates
@@ -281,23 +166,12 @@
 	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
     }
 
-    window.addEventListener('resize', onWindowResize);
     window.addEventListener('mousemove', onMouseMove, false);
 
-    
     animate();
     controls.update();
-    //hoverPieces();
      
     </script>
 
-    <p>
-        X : <span id="mouse_x"></span>
-        Mouse is over object: <span id="no"></span> 
-    </p>
-    <p>
-        Y : <span id="mouse_y"></span>
-    </p>
-    
 </body>
 </html>
