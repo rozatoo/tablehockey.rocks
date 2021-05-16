@@ -27,7 +27,7 @@
 			import * as THREE from './three.module.js';
             import { GLTFLoader } from './GLTFLoader.js';
 			import Stats from './stats.module.js';
-            import OrbitControls from './OrbitControls.js';
+            import { OrbitControls } from './OrbitControls.js';
 
 			let container, stats;
 			let camera, scene, raycaster, renderer;
@@ -56,7 +56,7 @@
 				scene.add( light );
 
 				const geometry = new THREE.BoxGeometry( 20, 20, 20 );
-
+                const controls = new THREE.MapControls( camera, renderer.domElement);
 
 
 				raycaster = new THREE.Raycaster();
