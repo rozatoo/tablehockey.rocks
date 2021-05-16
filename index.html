@@ -17,13 +17,13 @@
 </head>
 <body>
 
-    <script src="three.js"></script>
-    <script type="module" src="GLTFLoader.js"></script>
-    <script src="DragControls.js"></script>
-    <script src="OrbitControls.js"></script>
+    <script src="tablehockey/three.js"></script>
+    <script type="module" src="tablehockey/GLTFLoader.js"></script>
+    <script src="tablehockey/DragControls.js"></script>
+    <script src="tablehockey/OrbitControls.js"></script>
     <script type="module">
     
-    import {GLTFLoader} from "./GLTFLoader.js"
+    import {GLTFLoader} from "./tablehockey/GLTFLoader.js"
 
     var scene = new THREE.Scene();
     var mouse = new THREE.Vector2();
@@ -54,16 +54,13 @@
     const controls = new THREE.MapControls( camera, renderer.domElement);
 
     scene.background = new THREE.Color('#EDFFC9');
-    var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.6 );
-    light.position.set(0,30,0)
-    const rectLight = new THREE.DirectionalLight( 0xffffff, 1.3,  80, 80 );
+    var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.5
+    );
+    light.position.set(0,10,0)
+    const rectLight = new THREE.RectAreaLight( 0xffffff, 1.3,  80, 80 );
     rectLight.position.set( -30, 40, -10 );
     rectLight.lookAt( 0, 0, 0 );
     rectLight.castShadow = true;
-    rectLight.shadow.mapSize.width = 512; 
-    rectLight.shadow.mapSize.height = 512; 
-    rectLight.shadow.camera.near = 0.5;
-    rectLight.shadow.camera.far = 500; 
     scene.add( rectLight )
     scene.add(light);
 
@@ -73,22 +70,22 @@
     color_2 = new THREE.Color('#82E4FF');
    // var material = new MeshBasicMaterial({ color:0x0000 });
    // var player_2 = new THREE.Mesh(material);
-    loader.load("./3D-Models/Field.glb", function(gltf){
+    loader.load("./tablehockey/3D-Models/Field.glb", function(gltf){
         field = gltf.scene;
         scene.add(gltf.scene);
         field.castShadow = true;
     })
-    loader.load("./3D-Models/Player_1.gltf", function(gltf){
+    loader.load("./tablehockey/3D-Models/Player_1.gltf", function(gltf){
         player_1 = gltf.scene;
         scene.add(gltf.scene);
         player_1.castShadow = true;
     })
-    loader.load("./3D-Models/Player_2.gltf", function(gltf){
+    loader.load("./tablehockey/3D-Models/Player_2.gltf", function(gltf){
         player_2 = gltf.scene;
         scene.add(gltf.scene);
         player_2.castShadow = true;
     })
-    loader.load("./3D-Models/Puck.gltf", function(gltf){
+    loader.load("./tablehockey/3D-Models/Puck.gltf", function(gltf){
         puck = gltf.scene;
         scene.add(gltf.scene);
         puck.castShadow = ture;
