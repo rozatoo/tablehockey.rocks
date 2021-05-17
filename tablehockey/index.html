@@ -31,18 +31,17 @@
 	let INTERSECTED;
      
     /*
-     var camera = new THREE.PerspectiveCamera(
+var width = 10;
+    var height = width * ( window.innerHight / window.innerWidth );
+    var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 100 );
+    */
+   var camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
         0.01,
         1000);
-    */
-   
-    var width = 10;
-    var height = width * ( window.innerHight / window.innerWidth );
-    var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 100 );
     
-    camera.position.set( 10, 10, 0 );
+    camera.position.set( 15, 30, 0 );
     camera.lookAt( 0, 0, 0 );
 
     var renderer = new THREE.WebGLRenderer(); 
