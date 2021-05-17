@@ -39,23 +39,36 @@
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
-     
-
+    const controls = new THREE.MapControls( camera, renderer.domElement );
     var loader = new GLTFLoader();
-
-    var field;
-    var player_1;
-    var player_2;
-    var puck;
     
-   // var material = new MeshBasicMaterial({ color:0x0000 });
-   // var player_2 = new THREE.Mesh(material);
+    scene.background = new THREE.Color( '#E0F4C0' );
+    
+    var material_1 = new THREE.MeshLambertMaterial({
+        color:'#00b3ff'
+    });
+    var material_2 = new THREE.MeshLambertMaterial({
+        color:'#FBBE4D'
+    });
+    var field_material = new THREE.MeshLambertMaterial({
+        color:'#ECF8FF'
+    });
+    
+    var light = new THREE.HemisphereLight( '#e7e7e7', '#b2b2b2', 1.1 );
+    // var light = new THREE.PointLight(0xfffff, 2, 200);
+    light.position.set(0, 30, 0)
+    scene.add(light);
+
+    camera.position.set(300, 300, 300);
+    camera.lookAt(0, 0, 0);
+
+    /*
+    var field, player_1, player_2, puck;
+
     loader.load("./3D-Models/Field.gltf", function(gltf){
         field = gltf.scene;
         scene.add(gltf.scene);
     })
-    /*
     loader.load("./3D-Models/Player_1.gltf", function(gltf){
         player_1 = gltf.scene;
         scene.add(gltf.scene);
@@ -72,27 +85,19 @@
     */
 
   //Example of how to make a Mesg Cylinder
-    var geometry = new THREE.CylinderGeometry( 2.1, 2.1, 3, 20);
+    var player_geometry = new THREE.CylinderGeometry( 21, 21, 8, 20 );
+    var field_geometry = new THREE.BoxGeometry( 450, 1, 300 );
 
-    var material = new THREE.MeshLambertMaterial({
-        color:0xF0032222
+    var player_1 = new THREE.Mesh(player_geometry, material_1);
+    scene.add(player_1);
+    var player_2 = new THREE.Mesh(player_geometry, material_2);
+    scene.add(player_2);
+    player_1.position.set(30, 0, 30);
 
-    });
-    var mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-
-    const controls = new THREE.MapControls( camera, renderer.domElement);
-
-    scene.background = new THREE.Color(0xFFFFFF);
-    //var light = new THREE.HemisphereLight(0xfffff, 0x000000, 2);
-    var light = new THREE.PointLight(0xfffff, 2, 200);
-    light.position.set(14.5, 10, -24.5)
-    scene.add(light);
-
-    camera.position.set(14.5,10,-24.5);
-    camera.lookAt(0, 0, 0);
-    
+    var field = new THREE.Mesh(field_geometry, field_material);
+    field.position.set( 20, -5, 20 )
+    if (field);
+    scene.add(field);
     function animate() {
         requestAnimationFrame(animate);
 
@@ -104,11 +109,9 @@
         player_1.position.x = 0.01;
         player_2.position.y = 0.005;
         */ 
-        var controls;
-        if (mesh && player_1 && player_2 && field) {
-            mesh.rotation.x = 0.00001;
-            console.log("rotating");
-        }
+       if (player_1 && player_2) {
+           // mesh.position.z += 0.05
+       }
         highlight();
         renderer.render(scene, camera);
     }
@@ -185,7 +188,6 @@
 
     <p>
         X : <span id="mouse_x"></span>
-        Mouse is over object: <span id="no"></span> 
     </p>
     <p>
         Y : <span id="mouse_y"></span>
