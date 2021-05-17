@@ -63,16 +63,12 @@ var width = 10;
     var field_material = new THREE.MeshLambertMaterial({
         color:'#ECF8FF'
     });
-    
-    var light = new THREE.HemisphereLight( '#e7e7e7', '#b2b2b2', 1.1 );
-    // var light = new THREE.PointLight(0xfffff, 2, 200);
-    light.position.set(0, 30, 0)
-    scene.add(light);
 
     scene.background = new THREE.Color('#EDFFC9');
-    var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.5 );
+    var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.4 );
+    scene.add(light);
     light.position.set(0,30,0)
-    const rectLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
+    const rectLight = new THREE.DirectionalLight( 0xffffff, 1 );
     rectLight.position.set( -10, 10, -10 );
     rectLight.lookAt( 0, 0, 0 );
     rectLight.castShadow = true;
@@ -81,7 +77,7 @@ var width = 10;
     rectLight.shadow.camera.near = 0.5;
     rectLight.shadow.camera.far = 500; 
     scene.add( rectLight )
-    scene.add(light);
+    
 
     var field, player_1, player_2, puck, color_1, color_2;
     
