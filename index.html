@@ -16,14 +16,14 @@
     </style>
 </head>
 <body>
-    <script src="three.js"></script>
-    <script scr=""    
-    <script type="module" src="GLTFLoader.js"></script>
-    <script src="DragControls.js"></script>
-    <script src="OrbitControls.js"></script>
+
+    <script src="tablehockey/three.js"></script>
+    <script type="module" src="tablehockey/GLTFLoader.js"></script>
+    <script src="tablehockey/DragControls.js"></script>
+    <script src="tablehockey/OrbitControls.js"></script>
     <script type="module">
     
-    import {GLTFLoader} from "./GLTFLoader.js"
+    import {GLTFLoader} from "./tablehockey/GLTFLoader.js"
 
     var scene = new THREE.Scene();
     var mouse = new THREE.Vector2();
@@ -31,59 +31,36 @@
 	let INTERSECTED;
      
     /*
-     var camera = new THREE.PerspectiveCamera(
+    
+    */
+    var camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
         0.01,
         1000);
-    */
-   
-    var width = 10;
-    var height = width * ( window.innerHight / window.innerWidth );
-    var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 100 );
+
+    // const camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
     
-    camera.position.set( 10, 10, 0 );
-    camera.lookAt( 0, 0, 0 );
+    camera.position.set( 20, 35, 0 );
+    // camera.lookAt( 300, 0, -20 );
 
     var renderer = new THREE.WebGLRenderer(); 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.body.appendChild(renderer.domElement);
-    const controls = new THREE.MapControls( camera, renderer.domElement );
-    var loader = new GLTFLoader();
-    
-    scene.background = new THREE.Color( '#E0F4C0' );
-    
-    var material_1 = new THREE.MeshLambertMaterial({
-        color:'#00b3ff'
-    });
-    var material_2 = new THREE.MeshLambertMaterial({
-        color:'#FBBE4D'
-    });
-    var field_material = new THREE.MeshLambertMaterial({
-        color:'#ECF8FF'
-    });
-    
-    var light = new THREE.HemisphereLight( '#e7e7e7', '#b2b2b2', 1.1 );
-    // var light = new THREE.PointLight(0xfffff, 2, 200);
-    light.position.set(0, 30, 0)
-    scene.add(light);
 
     var loader = new GLTFLoader();
     const controls = new THREE.MapControls( camera, renderer.domElement);
 
     scene.background = new THREE.Color('#EDFFC9');
-    var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.5 );
-    light.position.set(0,30,0)
-    const rectLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
-    rectLight.position.set( -10, 10, -10 );
+    var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.5
+    );
+    light.position.set(0,10,0)
+    const rectLight = new THREE.RectAreaLight( 0xffffff, 1.3,  80, 80 );
+    rectLight.position.set( -30, 40, -10 );
     rectLight.lookAt( 0, 0, 0 );
     rectLight.castShadow = true;
-    rectLight.shadow.mapSize.width = 512; 
-    rectLight.shadow.mapSize.height = 512; 
-    rectLight.shadow.camera.near = 0.5;
-    rectLight.shadow.camera.far = 500; 
     scene.add( rectLight )
     scene.add(light);
 
@@ -93,27 +70,29 @@
     color_2 = new THREE.Color('#82E4FF');
    // var material = new MeshBasicMaterial({ color:0x0000 });
    // var player_2 = new THREE.Mesh(material);
-    loader.load("./3D-Models/Field.glb", function(gltf){
+    loader.load("./tablehockey/3D-Models/Field.glb", function(gltf){
         field = gltf.scene;
         scene.add(gltf.scene);
         field.castShadow = true;
     })
-    loader.load("./3D-Models/Player_1.gltf", function(gltf){
+    loader.load("./tablehockey/3D-Models/Player_1.gltf", function(gltf){
         player_1 = gltf.scene;
         scene.add(gltf.scene);
         player_1.castShadow = true;
     })
-    loader.load("./3D-Models/Player_2.gltf", function(gltf){
+    loader.load("./tablehockey/3D-Models/Player_2.gltf", function(gltf){
         player_2 = gltf.scene;
         scene.add(gltf.scene);
         player_2.castShadow = true;
     })
-    loader.load("./3D-Models/Puck.gltf", function(gltf){
+    loader.load("./tablehockey/3D-Models/Puck.gltf", function(gltf){
         puck = gltf.scene;
         scene.add(gltf.scene);
-        puck.castShadow = true;
+        puck.castShadow = ture;
     })
     
+    console.log("scene.chlidren after gltf loaded: " + scene.children)
+
   //Example of how to make a Mesh Cylinder
   /*  var geometry = new THREE.CylinderGeometry( 2.1, 2.1, 3, 20);
 
@@ -131,7 +110,6 @@
             //player_1.material.emissive.setHex( 0xff0000 );
 
         }
-        
         highlight();
         window.addEventListener( 'resize', onWindowResize );
         renderer.render(scene, camera);
@@ -144,12 +122,14 @@
     camera.updateProjectionMatrix();
 
     renderer.setSize( window.innerWidth, window.innerHeight );
+
 }
 
     function highlight() {
         raycaster.setFromCamera( mouse, camera );
 
             const intersects = raycaster.intersectObjects( scene.children, true );
+            console.log(scene.children, true);
 
             if ( intersects.length > 0 ) {
 
@@ -175,10 +155,10 @@
             renderer.render( scene, camera );
     }
 
-    /*window.addEventListener('mousemove', function (event) {
+    window.addEventListener('mousemove', function (event) {
         document.getElementById('mouse_x').textContent = event.x
         document.getElementById('mouse_y').textContent = event.y
-    });*/
+    });
 
     function onMouseMove( event ) {
 	// calculate mouse position in normalized device coordinates
