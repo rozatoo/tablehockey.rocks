@@ -70,9 +70,6 @@
     light.position.set(0, 30, 0)
     scene.add(light);
 
-    var loader = new GLTFLoader();
-    const controls = new THREE.MapControls( camera, renderer.domElement);
-
     scene.background = new THREE.Color('#EDFFC9');
     var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.5 );
     light.position.set(0,30,0)
