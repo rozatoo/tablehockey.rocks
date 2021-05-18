@@ -55,16 +55,16 @@ var width = 10;
     scene.background = new THREE.Color( '#E0F4C0' );
     
     var material_1 = new THREE.MeshLambertMaterial({
-        color:'#00b3ff'
+        color:'#D8FFA9'
     });
     var material_2 = new THREE.MeshLambertMaterial({
-        color:'#FBBE4D'
+        color:'#FFA9CA'
     });
     var field_material = new THREE.MeshLambertMaterial({
-        color:'#ECF8FF'
+        color:'#FFE0BD'
     });
-    var ground_material = new THREE.MeshLambertMaterial({
-        color: '#EDFFC9'
+    var ground_material = new THREE.MeshBasicMaterial({
+        color: '#ECCCC9'
     });
 
     scene.background = new THREE.Color('#EDFFC9');
@@ -96,6 +96,13 @@ var width = 10;
         player_1 = gltf.scene;
         scene.add(gltf.scene);
         player_1.castShadow = true;
+        player_1.traverse( ( child, i ) => {
+            if ( child.isMesh ) {
+                child.material = material_1
+                child.material.side = THREE.DoubleSide
+                console.log()
+            }
+        })
     })
     loader.load("./3D-Models/Player_2.gltf", function(gltf){
         player_2 = gltf.scene;
@@ -103,17 +110,19 @@ var width = 10;
         player_2.castShadow = true;
         player_2.traverse( ( child, i ) => {
             if ( child.isMesh ) {
-                child.material = ground_material
+                child.material = material_2
                 child.material.side = THREE.DoubleSide
                 console.log()
             }
-        } )
+        })
     })
+    
     loader.load("./3D-Models/Puck.gltf", function(gltf){
         puck = gltf.scene;
         scene.add(gltf.scene);
         puck.castShadow = true;
     })
+    
     loader.load("./3D-Models/ground.gltf", function(gltf){
         ground = gltf.scene;
         ground.castShadow = true;
@@ -123,8 +132,9 @@ var width = 10;
                 child.material.side = THREE.DoubleSide
                 console.log()
             }
-        } )
-        ground.visible = true;
+        })
+        ground.visible = false;
+        ground.position.set( 0, 2, 0 )
         scene.add(ground);
     })
     
@@ -161,30 +171,38 @@ var width = 10;
     function highlight() {
         raycaster.setFromCamera( mouse, camera );
 
-            const intersects = raycaster.intersectObjects( scene.children, true );
+        const intersects = raycaster.intersectObjects( scene.children, true ); 
 
-            if ( intersects.length > 0 ) {
+        
+        if ( intersects.length > 0 ) {
 
-                if ( INTERSECTED != intersects[ 0 ].object ) {
+            // get the intersection point in the 3D world
+            var point = intersects[ 0 ].point  
+            var x, y;            
+            x = point.x
+            y = point.y
+            console.log( "x = " + x + " y = " + y )
 
-                    if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-                    INTERSECTED = intersects[ 0 ].object;
-                    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-                    INTERSECTED.material.emissive.setHex( 0xff0000 );
-                    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-
-                }
-
-            } else {
+            
+            if ( INTERSECTED != intersects[ 0 ].object ) {
 
                 if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
-                INTERSECTED = null;
-
+                INTERSECTED = intersects[ 0 ].object;
+                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                INTERSECTED.material.emissive.setHex( 0xff0000 );
+                // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
             }
 
-            renderer.render( scene, camera );
+        } else {
+
+            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+            INTERSECTED = null;
+        }
+        
+
+        renderer.render( scene, camera );
     }
 
     /*window.addEventListener('mousemove', function (event) {
@@ -205,6 +223,6 @@ var width = 10;
     controls.update();
      
     </script>
-
+    
 </body>
 </html>
