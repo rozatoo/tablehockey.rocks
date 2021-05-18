@@ -123,7 +123,7 @@ var width = 10;
         puck.castShadow = true;
     })
     
-    loader.load("./3D-Models/ground.gltf", function(gltf){
+    loader.load("./3D-Models/wide_flat_cube.gltf", function(gltf){
         ground = gltf.scene;
         ground.castShadow = true;
         ground.traverse( ( child, i ) => {
@@ -134,7 +134,7 @@ var width = 10;
             }
         })
         ground.visible = false;
-        ground.position.set( 0, 2, 0 )
+        ground.position.set( 0, 3, 0 )
         scene.add(ground);
     })
     
@@ -171,27 +171,35 @@ var width = 10;
     function highlight() {
         raycaster.setFromCamera( mouse, camera );
 
-        const intersects = raycaster.intersectObjects( scene.children, true ); 
-
+        const full_intersects = raycaster.intersectObjects( scene.children, true ); 
         
-        if ( intersects.length > 0 ) {
+        if ( full_intersects.length > 0 ) {
+
+            var intersects = full_intersects.slice( 1, full_intersects.length );
 
             // get the intersection point in the 3D world
-            var point = intersects[ 0 ].point  
-            var x, y;            
-            x = point.x
-            y = point.y
-            console.log( "x = " + x + " y = " + y )
+            var point = full_intersects[ 0 ].point  
+            var x, z;            
+            x = point.x // depth
+            z = point.z - 18.5 // width
+            // console.log( "x = " + x + " z = " + z )
 
+            move_player( x, z );
             
-            if ( INTERSECTED != intersects[ 0 ].object ) {
+            if ( intersects.length > 1 ) {
 
-                if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+                /*
+                if ( INTERSECTED != intersects[ 0 ].object ) {
 
-                INTERSECTED = intersects[ 0 ].object;
-                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-                INTERSECTED.material.emissive.setHex( 0xff0000 );
-                // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+                    if ( INTERSECTED ) 
+                    INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+                    INTERSECTED = intersects[ 0 ].object;
+                    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                    INTERSECTED.material.emissive.setHex( 0xff0000 );
+                    // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+                }
+                */
             }
 
         } else {
@@ -200,10 +208,26 @@ var width = 10;
 
             INTERSECTED = null;
         }
-        
-
         renderer.render( scene, camera );
     }
+
+    function move_player( x, z ) {
+
+        var delta = 0.4;
+
+        if ( player_1.position.x < x ) { 
+            player_1.position.x += delta/1.1;
+        } 
+        if ( player_1.position.x > x ) { 
+            player_1.position.x -= delta/1.1;
+        }
+        if ( player_1.position.z < z ) {
+            player_1.position.z += delta;
+        }
+        if ( player_1.position.z > z ) {
+            player_1.position.z -= delta;
+        }
+   }
 
     /*window.addEventListener('mousemove', function (event) {
         document.getElementById('mouse_x').textContent = event.x
