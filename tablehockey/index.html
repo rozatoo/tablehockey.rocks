@@ -65,11 +65,11 @@ var width = 10;
     });
 
     scene.background = new THREE.Color('#EDFFC9');
-    var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.4 );
-    scene.add(light);
-    light.position.set(0,30,0)
-    const rectLight = new THREE.DirectionalLight( 0xffffff, 1 );
-    rectLight.position.set( -10, 10, -10 );
+    // var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.4 );
+    // scene.add(light);
+    // light.position.set(0,30,0)
+    const rectLight = new THREE.DirectionalLight( 0xffffff, 1.2 );
+    rectLight.position.set( -5, 10, -10 );
     rectLight.lookAt( 0, 0, 0 );
     rectLight.castShadow = true;
     rectLight.shadow.mapSize.width = 512; 
@@ -78,7 +78,6 @@ var width = 10;
     rectLight.shadow.camera.far = 500; 
     scene.add( rectLight )
     
-
     var field, player_1, player_2, puck, color_1, color_2;
     
     color_1 = new THREE.Color('#FFCD82');
@@ -105,6 +104,11 @@ var width = 10;
         scene.add(gltf.scene);
         puck.castShadow = true;
     })
+    loader.load("./3D-Models/Puck.gltf", function(gltf){
+        puck = gltf.scene;
+        scene.add(gltf.scene);
+        puck.castShadow = true;
+    })
     
   //Example of how to make a Mesh Cylinder
   /*  var geometry = new THREE.CylinderGeometry( 2.1, 2.1, 3, 20);
@@ -121,14 +125,12 @@ var width = 10;
 
         if (player_1 && player_2 && field) {
             //player_1.material.emissive.setHex( 0xff0000 );
-
         }
         
         highlight();
         window.addEventListener( 'resize', onWindowResize );
         renderer.render(scene, camera);
     }
-
 
     function onWindowResize() {
 
