@@ -63,12 +63,15 @@ var width = 10;
     var field_material = new THREE.MeshLambertMaterial({
         color:'#ECF8FF'
     });
+    var ground_material = new THREE.MeshLambertMaterial({
+        color: '#EDFFC9'
+    });
 
     scene.background = new THREE.Color('#EDFFC9');
-    // var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.4 );
-    // scene.add(light);
-    // light.position.set(0,30,0)
-    const rectLight = new THREE.DirectionalLight( 0xffffff, 1.2 );
+    var light = new THREE.HemisphereLight(0xfffff, 0x000000, 0.6 );
+    scene.add(light);
+    light.position.set(0,30,0)
+    const rectLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
     rectLight.position.set( -5, 10, -10 );
     rectLight.lookAt( 0, 0, 0 );
     rectLight.castShadow = true;
@@ -78,7 +81,7 @@ var width = 10;
     rectLight.shadow.camera.far = 500; 
     scene.add( rectLight )
     
-    var field, player_1, player_2, puck, color_1, color_2;
+    var field, ground, player_1, player_2, puck, color_1, color_2;
     
     color_1 = new THREE.Color('#FFCD82');
     color_2 = new THREE.Color('#82E4FF');
@@ -98,16 +101,31 @@ var width = 10;
         player_2 = gltf.scene;
         scene.add(gltf.scene);
         player_2.castShadow = true;
+        player_2.traverse( ( child, i ) => {
+            if ( child.isMesh ) {
+                child.material = ground_material
+                child.material.side = THREE.DoubleSide
+                console.log()
+            }
+        } )
     })
     loader.load("./3D-Models/Puck.gltf", function(gltf){
         puck = gltf.scene;
         scene.add(gltf.scene);
         puck.castShadow = true;
     })
-    loader.load("./3D-Models/Puck.gltf", function(gltf){
-        puck = gltf.scene;
-        scene.add(gltf.scene);
-        puck.castShadow = true;
+    loader.load("./3D-Models/ground.gltf", function(gltf){
+        ground = gltf.scene;
+        ground.castShadow = true;
+        ground.traverse( ( child, i ) => {
+            if ( child.isMesh ) {
+                child.material = ground_material
+                child.material.side = THREE.DoubleSide
+                console.log()
+            }
+        } )
+        ground.visible = true;
+        scene.add(ground);
     })
     
   //Example of how to make a Mesh Cylinder
