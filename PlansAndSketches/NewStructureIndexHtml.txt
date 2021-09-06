@@ -1,29 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TableHockey</title>
-    <style>
-            body{
-                margin:0;
-            }
-            canvas{
-                display:black;
-            }
-
-    </style>
-</head>
-<body>
-    <script src="three.js"></script>
-    <script scr=""    
-    <script type="module" src="GLTFLoader.js"></script>
-    <script src="DragControls.js"></script>
-    <script src="OrbitControls.js"></script>
-    <script type="module">
-    
-    import {GLTFLoader} from "./GLTFLoader.js";
+import {GLTFLoader} from "./GLTFLoader.js";
     import { Clock } from 'three';
 
     var scene = new THREE.Scene();
@@ -280,8 +255,3 @@
     }
     animate();
     controls.update();
-    
-    
-    </script>
-</body>
-</html>
