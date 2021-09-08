@@ -125,25 +125,28 @@ function onMouseMove( event ) {
 	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 }
 
-// change position of player_1
+// player follows mouse
 function move_player( x, z, player) {
-     // var gamma = 0.3;
-     var delta = 0.1;
-
-     //console.log(x, z);
-     
-     if ( player.position.x < x ) { 
-         player.position.x += delta;
-     }  
-     if ( player.position.x > x ) { 
-         player.position.x -= delta;
+     var delta = 0.05;
+     var max_delta = 0.35;
+     var delta_x = (x - player.position.x) * delta;
+     var delta_z = (z - player.position.z) * delta;
+     if (Math.abs(delta_x) > max_delta) {
+          if (delta_x < 0) {
+               delta_x = (-max_delta);
+          } else {
+               delta_x = max_delta;
+          }
      }
-     if ( player.position.z < z ) {
-         player.position.z += delta;
+     if (Math.abs(delta_z) > max_delta) {
+          if (delta_z < 0) {
+               delta_z = (-max_delta);
+          } else {
+               delta_z = max_delta
+          }
      }
-     if ( player.position.z > z ) {
-         player.position.z -= delta;
-     }
+     player_1.position.x += delta_x;
+     player_1.position.z += delta_z;
 }
 
 function move_camera() {
