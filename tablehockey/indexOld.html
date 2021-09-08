@@ -16,11 +16,11 @@
     </style>
 </head>
 <body>
-    <script src="three.js"></script>
-    <script scr=""    
+    <script src="three.js"></script> 
     <script type="module" src="GLTFLoader.js"></script>
-    <script src="DragControls.js"></script>
-    <script src="OrbitControls.js"></script>
+    <script src="./src/DragControls.js"></script>
+    <script src="./src/OrbitControls.js"></script>
+    
     <script type="module">
     
     import {GLTFLoader} from "./GLTFLoader.js";
@@ -46,7 +46,7 @@
    // var material = new MeshBasicMaterial({ color:0x0000 });
    // var player_2 = new THREE.Mesh(material);
     
-    function loadModels() {
+   function loadModels() {
         loader = new GLTFLoader();
         loader.load("./3D-Models/Field.glb", function(gltf){
             field = gltf.scene;
@@ -277,6 +277,7 @@
             renderer.setAnimationLoop(null);
         }
     }
+
     animate();
     controls.update();
     
