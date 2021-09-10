@@ -1,3 +1,4 @@
+import { Clock } from "./three.module.js";
 import {GLTFLoader} from "./GLTFLoader.js";
 
 let scene = new THREE.Scene();
@@ -9,6 +10,7 @@ let INTERSECTED;
 var player_1, player_2, field, puck, ground;
 const renderer = new THREE.WebGLRenderer();
 const rectLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
+const clock = new Clock();
 let camera;
 
 // load .gltf files and set objects to them
@@ -48,19 +50,19 @@ function loadModels() {
          puck.castShadow = true;
      })
 
-     loader.load("./3D-Models/wide_flat_cube.gltf", function(gltf){
-         ground = gltf.scene;
-         ground.castShadow = true;
-         ground.traverse( ( child, i ) => {
-             if ( child.isMesh ) {
-                 child.material = ground_material
-                 child.material.side = THREE.DoubleSide
-                 console.log()
-             }
-         })
-         ground.visible = false;
-         ground.position.set( 0, 3, 0 )
-         scene.add(ground);
+    loader.load("./3D-Models/wide_flat_cube.gltf", function(gltf){
+        ground = gltf.scene;
+        ground.castShadow = true;
+        ground.traverse( ( child, i ) => {
+            if ( child.isMesh ) {
+                child.material = ground_material
+                child.material.side = THREE.DoubleSide
+                console.log()
+            }
+        })
+        ground.visible = false;
+        ground.position.set( 0, 2, 0 )
+        scene.add(ground);
      })
      console.log("player_2 is " + player_2);
      console.log("player_1 is " + player_1);
@@ -101,7 +103,22 @@ function setScene() {
 }
 
 function setCamera() {
-     camera = new THREE.PerspectiveCamera(
+    var aspect = window.innerWidth / window.innerHeight;
+    var width = 70;
+    var height = width / aspect;
+    
+    camera = new THREE.OrthographicCamera(
+        width / -2,
+        width / 2,
+        height / 2,
+        height / -2,
+        1,
+        500
+    );
+    camera.position.set( 15, 30, 0 );
+    camera.lookAt( 0, 0, 0 );
+    /*
+    camera = new THREE.PerspectiveCamera(
      75,
      window.innerWidth / window.innerHeight,
      0.01,
@@ -109,6 +126,7 @@ function setCamera() {
      );
      camera.position.set( 15, 30, 0 );
      camera.lookAt( 0, 0, 0 );
+    */
 }
 
 // change picture on window resize
@@ -126,27 +144,30 @@ function onMouseMove( event ) {
 }
 
 // player follows mouse
-function move_player( x, z, player) {
-     var delta = 0.05;
-     var max_delta = 0.35;
-     var delta_x = (x - player.position.x) * delta;
-     var delta_z = (z - player.position.z) * delta;
-     if (Math.abs(delta_x) > max_delta) {
-          if (delta_x < 0) {
-               delta_x = (-max_delta);
-          } else {
-               delta_x = max_delta;
-          }
-     }
-     if (Math.abs(delta_z) > max_delta) {
-          if (delta_z < 0) {
-               delta_z = (-max_delta);
-          } else {
-               delta_z = max_delta
-          }
-     }
-     player_1.position.x += delta_x;
-     player_1.position.z += delta_z;
+function move_player( x, z, player, clock_delta) {
+    var factor = 5;     // multiplicator of speed
+    var max_delta = 25; // max speed
+    var gamma;          // factor (<0) to reduce speed to max speed
+     
+    var delta_x = (x - player.position.x) * factor; // velocity in x
+    var delta_z = (z - player.position.z) * factor; // velocity in y
+    var abs_dx = Math.abs(delta_x);
+    var abs_dz = Math.abs(delta_z);
+    if (abs_dx > max_delta || abs_dz > max_delta) {
+        if (abs_dx > abs_dz) {  // adjust based of the fastest/greatest
+            gamma = max_delta / abs_dx; // by what factor reduce speed
+            delta_x *= gamma;   // adjust speed
+            delta_z *= gamma;   // adjust speed
+        } else {
+            // see above
+            gamma = max_delta / abs_dz;
+            delta_z *= gamma;
+            delta_x *= gamma;
+        }
+    }
+    // change positon based on distance of mouse and time passed
+    player_1.position.x += delta_x * clock_delta;
+    player_1.position.z += delta_z * clock_delta;
 }
 
 function move_camera() {
@@ -162,45 +183,45 @@ function setRenderer() {
      document.body.appendChild(renderer.domElement);
 }
 
-function control_player(player) {
-     raycaster.setFromCamera(mouse, camera);
-     const full_intersects = raycaster.intersectObjects( scene.children, true ); 
+function control_player(player, clock_delta) {
+    raycaster.setFromCamera(mouse, camera);
+    const full_intersects = raycaster.intersectObjects( 
+         scene.children, true 
+    ); 
      
-     if ( full_intersects.length > 0 ) {
-         var intersects = full_intersects.slice( 1, full_intersects.length );
+    if ( full_intersects.length > 0 ) {
+        var intersects = full_intersects.slice( 1, full_intersects.length );
 
-         // get the intersection point in the 3D world
-         var point = full_intersects[ 0 ].point  
-         var x, z;            
-         x = point.x // depth
-         z = point.z - 18.5 // width
+        // get the intersection point in the 3D world
+        var point = full_intersects[ 0 ].point  
+        var x, z;            
+        x = point.x         // depth
+        z = point.z - 19    // width
          
-         move_player(x, z, player);
+        move_player(x, z, player, clock_delta);
          
-         if ( intersects.length > 1 ) {
+        if ( intersects.length > 1 ) {
 
-             /* 
+            /* 
+            // change color of object mous points at
+            if ( INTERSECTED != intersects[ 0 ].object ) {
 
-             // change color of object mous points at
-             if ( INTERSECTED != intersects[ 0 ].object ) {
+                if ( INTERSECTED ) 
+                INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
-                 if ( INTERSECTED ) 
-                 INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+                INTERSECTED = intersects[ 0 ].object;
+                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                INTERSECTED.material.emissive.setHex( 0xff0000 );
+                // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+            }
+            */
+        }
 
-                 INTERSECTED = intersects[ 0 ].object;
-                 INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-                 INTERSECTED.material.emissive.setHex( 0xff0000 );
-                 // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-             }
-             */
-         }
+} else {
 
-     } else {
-
-         if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-         INTERSECTED = null;
-     }
+        if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+        INTERSECTED = null;
+    }
 }
 
 class Loop {
@@ -216,13 +237,6 @@ class Loop {
      }
      
      start() {
-         // requestAnimationFrame(animate);
-         
-         /*if (player_1 && player_2 && field) {
-              console.log("all important components available")
-         }*/
-
-         // highlight();
          window.addEventListener( 'resize', onWindowResize );
 
          // animation
@@ -240,9 +254,10 @@ class Loop {
 
      // changes between frames
      tick() {
+          const clock_delta = clock.getDelta();
           // move_camera();
           if (player_1) {
-               control_player(player_1);
+               control_player(player_1, clock_delta);
           }
      }
 }
