@@ -25,7 +25,7 @@ class GameObject {
           this.model.traverse( (child, i) => {
                if ( child.isMesh ) {
                     child.material = this.material;
-                    child.material.side = THREE.DoubleSide
+                    child.material.side = THREE.DoubleSid;
                }
           } )
      }
