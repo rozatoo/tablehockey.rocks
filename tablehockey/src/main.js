@@ -14,7 +14,7 @@ const renderer = new THREE.WebGLRenderer();
 const rectLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
 const clock = new Clock();
 let camera;
-let physics = new CannonPhysics();
+// let physics = new CannonPhysics();
 let printflag = true;
 
 // load .gltf files and set objects to them
