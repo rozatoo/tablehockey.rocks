@@ -5,7 +5,8 @@ let scene = new THREE.Scene();
 var mouse = new THREE.Vector2();
 var raycaster = new THREE.Raycaster();
 let color_1, color_2;
-let light, material_1, material_2, field_material, ground_material, loader;
+let light, material_1, material_2, field_material; 
+let ground_material, loader;
 let INTERSECTED;
 let world;
 let delta_camera = (- 0.05);
@@ -14,7 +15,6 @@ const renderer = new THREE.WebGLRenderer();
 const rectLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
 const clock = new Clock();
 let camera;
-// let physics = new CannonPhysics();
 let printflag = true;
 
 // load .gltf files and set objects to them
