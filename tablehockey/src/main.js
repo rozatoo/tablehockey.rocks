@@ -1,7 +1,14 @@
 import { Clock } from "./three.module.js";
 import {GLTFLoader} from "./GLTFLoader.js";
+// import THREE from "./three.js";
+// import { strict } from "assert/strict";
 
-let scene = new THREE.Scene();
+Physijs.scripts.worker = 'src/physijs_worker.js';
+Physijs.scripts.ammo = 'ammo.js';
+
+var scene;
+scene = new Physijs.Scene();
+scene.setGravity(new THREE.Vector3( 0, -10, 0 ));
 var mouse = new THREE.Vector2();
 var raycaster = new THREE.Raycaster();
 let color_1, color_2;
@@ -25,6 +32,7 @@ function loadModels() {
         scene.add(gltf.scene);
         field.castShadow = true;
     })
+    
     loader.load("./3D-Models/Player_1.gltf", function(gltf){
         player_1 = gltf.scene;
         scene.add(gltf.scene);
@@ -69,6 +77,28 @@ function loadModels() {
     console.log("player_2 is " + player_2);
     console.log("player_1 is " + player_1);
     console.log("field is " + field);
+}
+
+// creat physijs and threejs objects
+function loadPhysiModels() {
+    var material = Physijs.createMaterial( 
+        new THREE.MeshBasicMaterial({ color: new THREE.Color( 'skyblue' ) }),
+        true,
+        0.9
+    );
+    player_1 = new Physijs.CylinderMesh(
+        new THREE.CylinderGeometry( 10, 10, 5, 16 ),
+        material    
+    );
+    // player_1.castShadow = true;
+    player_1.position.x = 0;
+    player_1.position.y = 0;
+    player_1.position.z = 0;
+    player_1.visible = true;
+    if ( player_1 ) {
+        console.log( player_1 );    
+    }
+    scene.add( player_1 );
 }
 
 // set materals, add lights to scene
@@ -117,7 +147,7 @@ function setCamera() {
         1,
         500
     );
-    camera.position.set( 15, 30, 15 );
+    camera.position.set( 0, 30, 15 );
     camera.lookAt( 0, 0, 0 );
     /*
     camera = new THREE.PerspectiveCamera(
@@ -182,10 +212,10 @@ function move_camera() {
 
 // setup renderer and append to document body
 function setRenderer() { 
-     renderer.setSize(window.innerWidth, window.innerHeight);
-     renderer.shadowMap.enabled = true;
-     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-     document.body.appendChild(renderer.domElement);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    document.body.appendChild(renderer.domElement);
 }
 
 function control_player(player, clock_delta) {
@@ -277,18 +307,18 @@ class Loop {
         this.renderer = renderer;
         this.onMouseMove = onMouseMove;
         this.updatables = [];
+        loadPhysiModels();
         window.addEventListener('mousemove', this.onMouseMove, false);
     }
      
     start() {
         window.addEventListener( 'resize', onWindowResize );
         // animation
-        this.renderer.setAnimationLoop(() => {
-            // update scene 
-            this.tick();
-            // render frame
-            this.renderer.render(this.scene, this.camera);
-        });
+        
+        // update scene 
+        this.tick();
+        // render frame
+        this.renderer.render(this.scene, this.camera);
     }
 
     stop() {
@@ -310,21 +340,19 @@ class Loop {
     }
 }
 
-/*
-const controls = new THREE.MapControls(camera, renderer.domElement);
-controls.update();
-*/
+
+
+
+// const controls = new THREE.MapControls(camera, renderer.domElement);
+// controls.update();
 
 setCamera();
-loadModels();
-// console.log(models);
+// loadModels();
 setScene();
 setRenderer();
 window.addEventListener('mousemove', onMouseMove, false);
-// console.log(this.player_1);
 
 const loop = new Loop(camera, scene, renderer);
 loop.start();
 console.log("end");
-
 // animate();
