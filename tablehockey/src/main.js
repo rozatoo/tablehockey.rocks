@@ -340,9 +340,6 @@ class Loop {
     }
 }
 
-
-
-
 // const controls = new THREE.MapControls(camera, renderer.domElement);
 // controls.update();
 
